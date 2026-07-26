@@ -9,11 +9,18 @@ from typing import Optional, Dict, Any
 from dotenv import load_dotenv
 
 from kroger_api.kroger_api import KrogerAPI
+from kroger_api.client import KrogerClient
 from kroger_api.utils.env import load_and_validate_env, get_zip_code
 from kroger_api.token_storage import load_token, get_token_file_path
 
 # Load environment variables
 load_dotenv()
+
+# kroger_api hardcodes the production host. Apps that are only registered in
+# Kroger's Certification environment get "Invalid client_id" against
+# api.kroger.com, so allow pointing the client at api-ce.kroger.com instead.
+if os.getenv("KROGER_ENVIRONMENT", "").strip().lower() in ("certification", "cert", "ce"):
+    KrogerClient.BASE_URL = "https://api-ce.kroger.com"
 
 # Global state for clients and preferred location
 _authenticated_client: Optional[KrogerAPI] = None

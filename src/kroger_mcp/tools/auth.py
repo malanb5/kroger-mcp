@@ -129,7 +129,7 @@ def register_auth_tools(mcp):
             received_state = query_params.get('state', [None])[0]
             
             # Verify state parameter to prevent CSRF attacks
-            if received_state != _auth_state:
+            if (received_state or "").lower() != (_auth_state or "").lower():
                 if ctx:
                     await ctx.error(f"State mismatch: expected {_auth_state}, got {received_state}")
                 return {
